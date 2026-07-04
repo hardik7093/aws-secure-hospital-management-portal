@@ -1,31 +1,26 @@
-<!DOCTYPE html>
+k<!DOCTYPE html>
 <html>
-
 <head>
-
-<title>Dashboard</title>
-
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
+    <title>Hospital Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
 
 <div class="container">
 
-<h1>Hospital Dashboard</h1>
+<h1>🏥 Hospital Management Portal</h1>
 
-<form>
+<form action="/add" method="POST">
 
-<input type="text" placeholder="Patient Name">
+<input type="text" name="name" placeholder="Patient Name" required>
 
-<input type="number" placeholder="Age">
+<input type="number" name="age" placeholder="Age" required>
 
-<input type="text" placeholder="Disease">
+<input type="text" name="disease" placeholder="Disease" required>
 
-<input type="text" placeholder="Doctor">
+<input type="text" name="doctor" placeholder="Doctor" required>
 
-<button>Add Patient</button>
+<button type="submit">Add Patient</button>
 
 </form>
 
@@ -36,21 +31,34 @@
 <table>
 
 <tr>
-
+<th>ID</th>
 <th>Name</th>
-
 <th>Age</th>
-
 <th>Disease</th>
-
 <th>Doctor</th>
+</tr>
+
+{% for patient in patients %}
+
+<tr>
+
+<td>{{ patient.id }}</td>
+
+<td>{{ patient.name }}</td>
+
+<td>{{ patient.age }}</td>
+
+<td>{{ patient.disease }}</td>
+
+<td>{{ patient.doctor }}</td>
 
 </tr>
+
+{% endfor %}
 
 </table>
 
 </div>
 
 </body>
-
 </html>
