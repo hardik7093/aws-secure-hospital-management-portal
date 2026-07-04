@@ -1,16 +1,85 @@
-k<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Hospital Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management Portal</title>
+
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            background:#f4f4f4;
+            margin:40px;
+        }
+
+        .container{
+            width:90%;
+            margin:auto;
+            background:white;
+            padding:20px;
+            border-radius:10px;
+            box-shadow:0 0 10px rgba(0,0,0,.2);
+        }
+
+        h1{
+            text-align:center;
+            color:#007bff;
+        }
+
+        form{
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:15px;
+            margin-bottom:30px;
+        }
+
+        input{
+            padding:10px;
+        }
+
+        button{
+            padding:12px;
+            background:#007bff;
+            color:white;
+            border:none;
+            cursor:pointer;
+            grid-column:span 2;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        table,th,td{
+            border:1px solid #ddd;
+        }
+
+        th{
+            background:#007bff;
+            color:white;
+            padding:10px;
+        }
+
+        td{
+            padding:10px;
+            text-align:center;
+        }
+
+        tr:nth-child(even){
+            background:#f2f2f2;
+        }
+    </style>
+
 </head>
+
 <body>
 
 <div class="container">
 
-<h1>🏥 Hospital Management Portal</h1>
+<h1>🏥 AWS Secure Hospital Management Portal</h1>
 
-<form action="/add" method="POST">
+<form action="/add" method="POST" enctype="multipart/form-data">
 
 <input type="text" name="name" placeholder="Patient Name" required>
 
@@ -18,24 +87,25 @@ k<!DOCTYPE html>
 
 <input type="text" name="disease" placeholder="Disease" required>
 
-<input type="text" name="doctor" placeholder="Doctor" required>
+<input type="text" name="doctor" placeholder="Doctor Name" required>
+
+<input type="file" name="report" required>
 
 <button type="submit">Add Patient</button>
 
 </form>
-
-<hr>
 
 <h2>Patient Records</h2>
 
 <table>
 
 <tr>
-<th>ID</th>
-<th>Name</th>
-<th>Age</th>
-<th>Disease</th>
-<th>Doctor</th>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Age</th>
+    <th>Disease</th>
+    <th>Doctor</th>
+    <th>Report</th>
 </tr>
 
 {% for patient in patients %}
@@ -52,6 +122,8 @@ k<!DOCTYPE html>
 
 <td>{{ patient.doctor }}</td>
 
+<td>{{ patient.report_file }}</td>
+
 </tr>
 
 {% endfor %}
@@ -61,4 +133,4 @@ k<!DOCTYPE html>
 </div>
 
 </body>
-</html>
+</html>~
