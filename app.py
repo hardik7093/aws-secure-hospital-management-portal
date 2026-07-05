@@ -71,7 +71,45 @@ sns = boto3.client(
     region_name=REGION
 )
 
+events = boto3.client(
+    "events",
+    region_name=REGION
+)
+
 TOPIC_ARN = "arn:aws:sns:us-east-1:515966516119:hospital-notification-topic"
+EVENT_BUS_NAME = "hospital-event-bus"
+
+# ======================================
+# EventBridge Publisher
+# ======================================
+
+def publish_patient_created_event(name, age, disease, doctor, filename):
+
+    event_detail = {
+        "patient_name": name,
+        "age": age,
+        "disease": disease,
+        "doctor": doctor,
+        "report_file": filename
+    }
+
+    response = events.put_events(
+        Entries=[
+            {
+                "Source": "hospital.portal",
+                "DetailType": "PatientCreated",
+                "Detail": json.dumps(event_detail),
+                "EventBusName": EVENT_BUS_NAME
+            }
+        ]
+    )
+
+    failed_count = response.get("FailedEntryCount", 0)
+
+    if failed_count > 0:
+        logging.error(f"EventBridge Publish Failed : {response}")
+    else:
+        logging.info(f"EventBridge Event Published for Patient : {name}")
 
 # ======================================
 # Dashboard
@@ -150,6 +188,15 @@ def add_patient():
 
         logging.info(f"Patient Added : {name}")
 
+        # EventBridge Event
+        publish_patient_created_event(
+            name=name,
+            age=age,
+            disease=disease,
+            doctor=doctor,
+            filename=filename
+        )
+
         # SNS Notification
         sns.publish(
             TopicArn=TOPIC_ARN,
@@ -177,6 +224,7 @@ Services Used
 ✅ Amazon S3
 ✅ AWS Secrets Manager
 ✅ Amazon SNS
+✅ Amazon EventBridge
 
 This notification was generated automatically.
 """
@@ -203,5 +251,6 @@ if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=5000,
-        debug=True
+        debug=False,
+        use_reloader=False
     )
