@@ -1,0 +1,14 @@
+2026-07-05 09:21:24,568 | INFO | Found credentials from IAM Role: Hospital-EC2-Secrets-Role
+2026-07-05 09:21:24,805 | INFO | Hospital Management Portal Started
+2026-07-05 09:21:24,816 | INFO | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.0.31.206:5000
+2026-07-05 09:21:24,816 | INFO | [33mPress CTRL+C to quit[0m
+2026-07-05 09:21:24,817 | INFO |  * Restarting with stat
+2026-07-05 09:21:25,116 | INFO | Found credentials from IAM Role: Hospital-EC2-Secrets-Role
+2026-07-05 09:21:25,318 | INFO | Hospital Management Portal Started
+2026-07-05 09:21:25,324 | WARNING |  * Debugger is active!
+2026-07-05 09:21:25,324 | INFO |  * Debugger PIN: 188-502-031
+2026-07-05 09:22:34,974 | INFO | Dashboard accessed.
+2026-07-05 09:22:34,979 | INFO | 122.170.195.92 - - [05/Jul/2026 09:22:34] "GET / HTTP/1.1" 200 -

@@ -3,6 +3,7 @@ from werkzeug.utils import secure_filename
 import pymysql
 import boto3
 import json
+import logging
 
 app = Flask(__name__)
 
@@ -13,6 +14,16 @@ app = Flask(__name__)
 REGION = "us-east-1"
 SECRET_NAME = "hospital-db-secret"
 BUCKET_NAME = "hardik-hospital-reports-2026"
+
+# ======================================
+# Logging Configuration
+# ======================================
+
+logging.basicConfig(
+    filename="hospital.log",
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s"
+)
 
 # ======================================
 # Get Database Secret
@@ -29,7 +40,6 @@ def get_db_secret():
     )
 
     return json.loads(response["SecretString"])
-
 
 secret = get_db_secret()
 
@@ -48,17 +58,13 @@ connection = pymysql.connect(
 )
 
 # ======================================
-# S3 Client
+# AWS Clients
 # ======================================
 
 s3 = boto3.client(
     "s3",
     region_name=REGION
 )
-
-# ======================================
-# SNS Client
-# ======================================
 
 sns = boto3.client(
     "sns",
@@ -84,6 +90,8 @@ def home():
 
     patients = cursor.fetchall()
 
+    logging.info("Dashboard accessed.")
+
     return render_template(
         "dashboard.html",
         patients=patients
@@ -96,51 +104,57 @@ def home():
 @app.route("/add", methods=["POST"])
 def add_patient():
 
-    name = request.form["name"]
-    age = request.form["age"]
-    disease = request.form["disease"]
-    doctor = request.form["doctor"]
+    try:
 
-    report = request.files["report"]
+        name = request.form["name"]
+        age = request.form["age"]
+        disease = request.form["disease"]
+        doctor = request.form["doctor"]
 
-    filename = ""
+        report = request.files["report"]
 
-    # Upload Report to S3
-    if report and report.filename != "":
+        filename = ""
 
-        filename = secure_filename(report.filename)
+        # Upload report to S3
+        if report and report.filename != "":
 
-        s3.upload_fileobj(
-            report,
-            BUCKET_NAME,
-            filename
+            filename = secure_filename(report.filename)
+
+            s3.upload_fileobj(
+                report,
+                BUCKET_NAME,
+                filename
+            )
+
+            logging.info(f"Report uploaded to S3 : {filename}")
+
+        # Save to RDS
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            INSERT INTO patients
+            (name, age, disease, doctor, report_file)
+
+            VALUES
+            (%s,%s,%s,%s,%s)
+            """,
+            (
+                name,
+                age,
+                disease,
+                doctor,
+                filename
+            )
         )
 
-    # Save into Database
-    cursor = connection.cursor()
+        logging.info(f"Patient Added : {name}")
 
-    cursor.execute(
-        """
-        INSERT INTO patients
-        (name, age, disease, doctor, report_file)
-
-        VALUES
-        (%s,%s,%s,%s,%s)
-        """,
-        (
-            name,
-            age,
-            disease,
-            doctor,
-            filename
-        )
-    )
-
-    # Send SNS Notification
-    sns.publish(
-        TopicArn=TOPIC_ARN,
-        Subject="New Patient Registered",
-        Message=f"""
+        # SNS Notification
+        sns.publish(
+            TopicArn=TOPIC_ARN,
+            Subject="New Patient Registered",
+            Message=f"""
 🏥 AWS Secure Hospital Management Portal
 
 A new patient has been registered successfully.
@@ -166,15 +180,26 @@ Services Used
 
 This notification was generated automatically.
 """
-    )
+        )
 
-    return redirect("/")
+        logging.info(f"SNS Notification Sent for {name}")
+
+        return redirect("/")
+
+    except Exception as e:
+
+        logging.error(f"Application Error : {str(e)}")
+
+        return f"Error : {e}"
 
 # ======================================
-# Run Application
+# Run Flask
 # ======================================
 
 if __name__ == "__main__":
+
+    logging.info("Hospital Management Portal Started")
+
     app.run(
         host="0.0.0.0",
         port=5000,
