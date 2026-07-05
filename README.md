@@ -45,11 +45,6 @@ Amazon EC2 - Flask Application
 | EventBridge | Publishes `PatientCreated` custom events | Done |
 | CloudTrail | Tracks AWS API activity for auditing | Done |
 | CloudFront | Provides HTTPS access through CloudFront default domain | Done |
-| ALB | Optional future scalability enhancement | Optional |
-| Auto Scaling | Optional future scalability enhancement | Optional |
-| AWS Backup | Optional production disaster recovery enhancement | Optional |
-| WAF | Optional protection layer for ALB/CloudFront | Optional |
-| Route 53 + ACM | Optional custom domain and TLS certificate setup | Optional |
 
 ## Features
 
@@ -220,15 +215,10 @@ SNS Notification Sent
 - IAM roles are used for EC2-to-AWS service access.
 - CloudTrail is enabled for AWS API audit logging.
 - CloudFront provides HTTPS access using the default CloudFront certificate.
-- For production, restrict EC2 security group access and place the application behind an ALB or private origin.
+- For production, restrict EC2 security group access and avoid exposing application ports directly to the internet.
 
-## Optional Future Enhancements
+## Future Enhancements
 
-- Add Application Load Balancer for production-grade traffic routing.
-- Add Auto Scaling Group for high availability and horizontal scaling.
-- Add AWS Backup for automated RDS backup and recovery.
-- Add AWS WAF for managed web protection rules.
-- Add Route 53 and ACM for custom domain HTTPS access.
 - Add CI/CD deployment using GitHub Actions.
 
 ## Cleanup Notes
@@ -262,9 +252,3 @@ If this is a temporary AWS demo project, delete unused resources after testing t
 | EventBridge | Done |
 | CloudTrail | Done |
 | CloudFront | Done |
-| ALB | Optional |
-| Auto Scaling | Optional |
-| AWS Backup | Optional |
-| WAF | Optional |
-| Route 53 + ACM | Optional |
-
